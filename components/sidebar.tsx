@@ -17,6 +17,9 @@ import {
   Settings,
   LogOut,
   School,
+  ClipboardList,
+  CalendarDays,
+  Library,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -29,6 +32,9 @@ const menuItems = [
   { name: 'Penggajian', href: '/payrolls', icon: Wallet },
   { name: 'Siswa', href: '/students', icon: GraduationCap },
   { name: 'Kelas', href: '/classrooms', icon: BookOpen },
+  { name: 'Mata Pelajaran', href: '/subjects', icon: Library },
+  { name: 'Nilai Siswa', href: '/grades', icon: ClipboardList },
+  { name: 'Jadwal', href: '/schedules', icon: CalendarDays },
   { name: 'Tagihan', href: '/billings', icon: Receipt },
   { name: 'Pelanggaran', href: '/behavior-records', icon: AlertTriangle },
   { name: 'Tahfidz', href: '/tahfidz-records', icon: BookMarked },

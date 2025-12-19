@@ -184,6 +184,22 @@ export interface TahfidzRecord {
   student?: Student;
 }
 
+// Schedule
+export interface Schedule {
+  id: number;
+  classroom_id: number;
+  subject_id: number;
+  teacher_id: number;
+  day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday';
+  start_time: string;
+  end_time: string;
+  created_at: string;
+  updated_at: string;
+  classroom?: Classroom;
+  subject?: Subject;
+  teacher?: Employee;
+}
+
 // API Response types
 export interface PaginatedResponse<T> {
   data: T[];

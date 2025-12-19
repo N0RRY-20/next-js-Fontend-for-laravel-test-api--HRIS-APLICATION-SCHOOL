@@ -14,6 +14,7 @@ import type {
   Billing,
   BehaviorRecord,
   TahfidzRecord,
+  Schedule,
   PaginatedResponse,
 } from "@/types";
 
@@ -394,6 +395,38 @@ class ApiClient {
       method: "POST",
       body: JSON.stringify(data),
     });
+  }
+
+  // Schedules
+  async getSchedules(classroomId?: number): Promise<PaginatedResponse<Schedule>> {
+    const params = new URLSearchParams();
+    if (classroomId) params.append("classroom_id", String(classroomId));
+    const queryString = params.toString();
+    return this.request<PaginatedResponse<Schedule>>(
+      `/schedules${queryString ? `?${queryString}` : ""}`
+    );
+  }
+
+  async getSchedule(id: number): Promise<Schedule> {
+    return this.request<Schedule>(`/schedules/${id}`);
+  }
+
+  async createSchedule(data: Partial<Schedule>): Promise<Schedule> {
+    return this.request<Schedule>("/schedules", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateSchedule(id: number, data: Partial<Schedule>): Promise<Schedule> {
+    return this.request<Schedule>(`/schedules/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteSchedule(id: number): Promise<void> {
+    return this.request<void>(`/schedules/${id}`, { method: "DELETE" });
   }
 }
 
