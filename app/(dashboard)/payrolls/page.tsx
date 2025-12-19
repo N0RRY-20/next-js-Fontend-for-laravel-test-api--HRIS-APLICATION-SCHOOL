@@ -33,6 +33,64 @@ import {
   MoreHorizontal,
 } from 'lucide-react';
 
+const DUMMY_PAYROLLS: Payroll[] = [
+  {
+    id: 1,
+    employee_id: 1,
+    period: 'Desember 2024',
+    basic_salary: 5000000,
+    allowances: 1500000,
+    deductions: 500000,
+    net_salary: 6000000,
+    status: 'paid',
+    employee: { id: 1, name: 'Ahmad Fauzi', nip: '198501012010011001' },
+  },
+  {
+    id: 2,
+    employee_id: 2,
+    period: 'Desember 2024',
+    basic_salary: 4500000,
+    allowances: 1200000,
+    deductions: 450000,
+    net_salary: 5250000,
+    status: 'paid',
+    employee: { id: 2, name: 'Siti Aminah', nip: '199001152015022001' },
+  },
+  {
+    id: 3,
+    employee_id: 3,
+    period: 'Desember 2024',
+    basic_salary: 4800000,
+    allowances: 1300000,
+    deductions: 480000,
+    net_salary: 5620000,
+    status: 'pending',
+    employee: { id: 3, name: 'Budi Santoso', nip: '198712202012011002' },
+  },
+  {
+    id: 4,
+    employee_id: 4,
+    period: 'Desember 2024',
+    basic_salary: 4200000,
+    allowances: 1000000,
+    deductions: 420000,
+    net_salary: 4780000,
+    status: 'pending',
+    employee: { id: 4, name: 'Dewi Lestari', nip: '199205102018032001' },
+  },
+  {
+    id: 5,
+    employee_id: 5,
+    period: 'Desember 2024',
+    basic_salary: 3500000,
+    allowances: 800000,
+    deductions: 350000,
+    net_salary: 3950000,
+    status: 'paid',
+    employee: { id: 5, name: 'Rudi Hermawan', nip: '198808082011011003' },
+  },
+];
+
 export default function PayrollsPage() {
   const [payrolls, setPayrolls] = useState<Payroll[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,11 +107,15 @@ export default function PayrollsPage() {
     try {
       setLoading(true);
       const response: PaginatedResponse<Payroll> = await api.getPayrolls(currentPage);
-      setPayrolls(response.data);
-      setTotalPages(response.last_page);
-      setTotal(response.total);
+      const data = response.data.length > 0 ? response.data : DUMMY_PAYROLLS;
+      setPayrolls(data);
+      setTotalPages(response.last_page || 1);
+      setTotal(response.total || data.length);
     } catch (error) {
       console.error('Failed to fetch payrolls:', error);
+      setPayrolls(DUMMY_PAYROLLS);
+      setTotalPages(1);
+      setTotal(DUMMY_PAYROLLS.length);
     } finally {
       setLoading(false);
     }

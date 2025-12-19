@@ -1,12 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { api } from '@/lib/api';
-import type { Employee, PaginatedResponse } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from "react";
+import { api } from "@/lib/api";
+import type { Employee, PaginatedResponse } from "@/types";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -14,13 +20,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -29,15 +35,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Search,
   Plus,
@@ -48,7 +54,7 @@ import {
   Filter,
   ChevronLeft,
   ChevronRight,
-} from 'lucide-react';
+} from "lucide-react";
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -56,7 +62,7 @@ export default function EmployeesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -66,12 +72,14 @@ export default function EmployeesPage() {
   const fetchEmployees = async () => {
     try {
       setLoading(true);
-      const response: PaginatedResponse<Employee> = await api.getEmployees(currentPage);
+      const response: PaginatedResponse<Employee> = await api.getEmployees(
+        currentPage
+      );
       setEmployees(response.data);
       setTotalPages(response.last_page);
       setTotal(response.total);
     } catch (error) {
-      console.error('Failed to fetch employees:', error);
+      console.error("Failed to fetch employees:", error);
     } finally {
       setLoading(false);
     }
@@ -79,8 +87,8 @@ export default function EmployeesPage() {
 
   const filteredEmployees = employees.filter(
     (emp) =>
-      emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      emp.nip.toLowerCase().includes(searchQuery.toLowerCase())
+      emp.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.nip?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -88,7 +96,9 @@ export default function EmployeesPage() {
       {/* Page Heading */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Manajemen Pegawai</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Manajemen Pegawai
+          </h1>
           <p className="text-muted-foreground">
             Kelola data pegawai guru dan staf sekolah
           </p>
@@ -187,8 +197,7 @@ export default function EmployeesPage() {
                 <TableHead>NIP</TableHead>
                 <TableHead>Nama Pegawai</TableHead>
                 <TableHead>Jabatan</TableHead>
-                <TableHead>Departemen</TableHead>
-                <TableHead>No. Telepon</TableHead>
+                <TableHead>Gaji Pokok</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
@@ -196,7 +205,7 @@ export default function EmployeesPage() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                     </div>
@@ -204,7 +213,10 @@ export default function EmployeesPage() {
                 </TableRow>
               ) : filteredEmployees.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell
+                    colSpan={6}
+                    className="text-center py-8 text-muted-foreground"
+                  >
                     Tidak ada data pegawai
                   </TableCell>
                 </TableRow>
@@ -216,22 +228,36 @@ export default function EmployeesPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-medium">{employee.name}</span>
+                        <span className="font-medium">
+                          {employee.user?.name}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {employee.user?.email}
+                        </span>
                       </div>
                     </TableCell>
                     <TableCell>{employee.position}</TableCell>
-                    <TableCell>{employee.department}</TableCell>
-                    <TableCell>{employee.phone}</TableCell>
+                    <TableCell>
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                      }).format(Number(employee.base_salary))}
+                    </TableCell>
                     <TableCell>
                       <Badge
-                        variant={employee.status === 'active' ? 'default' : 'secondary'}
+                        variant={
+                          employee.status === "Permanent"
+                            ? "default"
+                            : "secondary"
+                        }
                         className={
-                          employee.status === 'active'
-                            ? 'bg-green-50 text-green-700 border-green-200'
-                            : ''
+                          employee.status === "Permanent"
+                            ? "bg-green-50 text-green-700 border-green-200"
+                            : ""
                         }
                       >
-                        {employee.status === 'active' ? 'Aktif' : 'Nonaktif'}
+                        {employee.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -266,11 +292,12 @@ export default function EmployeesPage() {
           {/* Pagination */}
           <div className="flex items-center justify-between p-4 border-t">
             <p className="text-sm text-muted-foreground">
-              Menampilkan{' '}
-              <span className="font-medium">{(currentPage - 1) * 10 + 1}</span> sampai{' '}
+              Menampilkan{" "}
+              <span className="font-medium">{(currentPage - 1) * 10 + 1}</span>{" "}
+              sampai{" "}
               <span className="font-medium">
                 {Math.min(currentPage * 10, total)}
-              </span>{' '}
+              </span>{" "}
               dari <span className="font-medium">{total}</span> data
             </p>
             <div className="flex gap-2">
@@ -286,7 +313,9 @@ export default function EmployeesPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
                 disabled={currentPage === totalPages}
               >
                 Selanjutnya

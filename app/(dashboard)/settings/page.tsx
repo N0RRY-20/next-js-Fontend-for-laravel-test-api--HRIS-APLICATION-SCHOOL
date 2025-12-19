@@ -1,16 +1,18 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
+import { useTheme } from 'next-themes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { User, Lock, Bell, Moon, Sun } from 'lucide-react';
+import { User, Lock, Bell, Moon, Sun, Monitor } from 'lucide-react';
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   return (
     <div className="flex flex-col gap-6">
@@ -148,13 +150,29 @@ export default function SettingsPage() {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">
+                <Button
+                  variant={theme === 'light' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTheme('light')}
+                >
                   <Sun className="h-4 w-4 mr-1" />
                   Light
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant={theme === 'dark' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTheme('dark')}
+                >
                   <Moon className="h-4 w-4 mr-1" />
                   Dark
+                </Button>
+                <Button
+                  variant={theme === 'system' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setTheme('system')}
+                >
+                  <Monitor className="h-4 w-4 mr-1" />
+                  System
                 </Button>
               </div>
             </div>

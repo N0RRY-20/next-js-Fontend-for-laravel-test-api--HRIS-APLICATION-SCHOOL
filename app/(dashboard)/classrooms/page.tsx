@@ -32,6 +32,51 @@ import {
   Users,
 } from 'lucide-react';
 
+const DUMMY_CLASSROOMS: Classroom[] = [
+  {
+    id: 1,
+    name: 'VII-A',
+    grade_level: 'VII',
+    capacity: 30,
+    homeroom_teacher_id: 1,
+  },
+  {
+    id: 2,
+    name: 'VII-B',
+    grade_level: 'VII',
+    capacity: 30,
+    homeroom_teacher_id: 2,
+  },
+  {
+    id: 3,
+    name: 'VIII-A',
+    grade_level: 'VIII',
+    capacity: 32,
+    homeroom_teacher_id: 3,
+  },
+  {
+    id: 4,
+    name: 'VIII-B',
+    grade_level: 'VIII',
+    capacity: 32,
+    homeroom_teacher_id: null,
+  },
+  {
+    id: 5,
+    name: 'IX-A',
+    grade_level: 'IX',
+    capacity: 28,
+    homeroom_teacher_id: 4,
+  },
+  {
+    id: 6,
+    name: 'IX-B',
+    grade_level: 'IX',
+    capacity: 28,
+    homeroom_teacher_id: 5,
+  },
+];
+
 export default function ClassroomsPage() {
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,11 +93,15 @@ export default function ClassroomsPage() {
     try {
       setLoading(true);
       const response: PaginatedResponse<Classroom> = await api.getClassrooms(currentPage);
-      setClassrooms(response.data);
-      setTotalPages(response.last_page);
-      setTotal(response.total);
+      const data = response.data.length > 0 ? response.data : DUMMY_CLASSROOMS;
+      setClassrooms(data);
+      setTotalPages(response.last_page || 1);
+      setTotal(response.total || data.length);
     } catch (error) {
       console.error('Failed to fetch classrooms:', error);
+      setClassrooms(DUMMY_CLASSROOMS);
+      setTotalPages(1);
+      setTotal(DUMMY_CLASSROOMS.length);
     } finally {
       setLoading(false);
     }

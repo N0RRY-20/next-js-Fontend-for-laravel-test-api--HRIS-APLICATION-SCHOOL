@@ -51,6 +51,59 @@ const typeLabels: Record<string, string> = {
   other: 'Lainnya',
 };
 
+const DUMMY_BILLINGS: Billing[] = [
+  {
+    id: 1,
+    student_id: 1,
+    type: 'spp',
+    description: 'SPP Bulan Desember 2024',
+    amount: 1500000,
+    due_date: '2024-12-15',
+    status: 'paid',
+    student: { id: 1, name: 'Muhammad Rizki', nis: '2024001' },
+  },
+  {
+    id: 2,
+    student_id: 2,
+    type: 'spp',
+    description: 'SPP Bulan Desember 2024',
+    amount: 1500000,
+    due_date: '2024-12-15',
+    status: 'pending',
+    student: { id: 2, name: 'Fatimah Azzahra', nis: '2024002' },
+  },
+  {
+    id: 3,
+    student_id: 3,
+    type: 'spp',
+    description: 'SPP Bulan November 2024',
+    amount: 1500000,
+    due_date: '2024-11-15',
+    status: 'overdue',
+    student: { id: 3, name: 'Ahmad Zainul', nis: '2024003' },
+  },
+  {
+    id: 4,
+    student_id: 4,
+    type: 'registration',
+    description: 'Biaya Pendaftaran Tahun Ajaran 2024/2025',
+    amount: 5000000,
+    due_date: '2024-07-30',
+    status: 'paid',
+    student: { id: 4, name: 'Aisyah Putri', nis: '2024004' },
+  },
+  {
+    id: 5,
+    student_id: 5,
+    type: 'other',
+    description: 'Biaya Kegiatan Pesantren Kilat',
+    amount: 500000,
+    due_date: '2024-12-20',
+    status: 'pending',
+    student: { id: 5, name: 'Umar Faruq', nis: '2024005' },
+  },
+];
+
 export default function BillingsPage() {
   const [billings, setBillings] = useState<Billing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,11 +120,15 @@ export default function BillingsPage() {
     try {
       setLoading(true);
       const response: PaginatedResponse<Billing> = await api.getBillings(currentPage);
-      setBillings(response.data);
-      setTotalPages(response.last_page);
-      setTotal(response.total);
+      const data = response.data.length > 0 ? response.data : DUMMY_BILLINGS;
+      setBillings(data);
+      setTotalPages(response.last_page || 1);
+      setTotal(response.total || data.length);
     } catch (error) {
       console.error('Failed to fetch billings:', error);
+      setBillings(DUMMY_BILLINGS);
+      setTotalPages(1);
+      setTotal(DUMMY_BILLINGS.length);
     } finally {
       setLoading(false);
     }

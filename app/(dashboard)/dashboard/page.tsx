@@ -26,7 +26,8 @@ import {
   Cake,
 } from 'lucide-react';
 
-const stats = [
+// Dummy data untuk fallback ketika tidak ada data dari API
+const DUMMY_STATS = [
   {
     title: 'Total Pegawai',
     value: '124',
@@ -65,7 +66,7 @@ const stats = [
   },
 ];
 
-const leaveRequests = [
+const DUMMY_LEAVE_REQUESTS = [
   {
     id: 1,
     name: 'Siti Aminah',
@@ -92,7 +93,7 @@ const leaveRequests = [
   },
 ];
 
-const weeklyAttendance = [
+const DUMMY_WEEKLY_ATTENDANCE = [
   { day: 'Sen', percentage: 98 },
   { day: 'Sel', percentage: 96 },
   { day: 'Rab', percentage: 94 },
@@ -101,8 +102,48 @@ const weeklyAttendance = [
   { day: 'Sab', percentage: 0, isHoliday: true },
 ];
 
+const DUMMY_EMPLOYEE_COMPOSITION = {
+  total: 124,
+  guru: 86,
+  tenagaKependidikan: 38,
+};
+
+const DUMMY_ANNOUNCEMENTS = [
+  {
+    id: 1,
+    type: 'important',
+    icon: Megaphone,
+    label: 'Penting',
+    title: 'Rapat Evaluasi Bulanan',
+    subtitle: 'Jumat, 28 Okt - Ruang Guru Lt.2',
+  },
+  {
+    id: 2,
+    type: 'birthday',
+    icon: Cake,
+    label: 'Ulang Tahun',
+    title: 'Bu Sri Wahyuni (Matematika)',
+    subtitle: 'Hari ini',
+  },
+];
+
 export default function DashboardPage() {
   const { user } = useAuth();
+
+  // Data dari API (ganti dengan fetch dari API nantinya)
+  // Contoh: const { data: apiStats } = useSWR('/api/stats', fetcher);
+  const apiStats = null as typeof DUMMY_STATS | null;
+  const apiLeaveRequests = null as typeof DUMMY_LEAVE_REQUESTS | null;
+  const apiWeeklyAttendance = null as typeof DUMMY_WEEKLY_ATTENDANCE | null;
+  const apiEmployeeComposition = null as typeof DUMMY_EMPLOYEE_COMPOSITION | null;
+  const apiAnnouncements = null as typeof DUMMY_ANNOUNCEMENTS | null;
+
+  // Gunakan dummy data jika tidak ada data dari API
+  const stats = apiStats ?? DUMMY_STATS;
+  const leaveRequests = apiLeaveRequests ?? DUMMY_LEAVE_REQUESTS;
+  const weeklyAttendance = apiWeeklyAttendance ?? DUMMY_WEEKLY_ATTENDANCE;
+  const employeeComposition = apiEmployeeComposition ?? DUMMY_EMPLOYEE_COMPOSITION;
+  const announcements = apiAnnouncements ?? DUMMY_ANNOUNCEMENTS;
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -199,30 +240,34 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="h-64 flex items-end justify-between gap-2 sm:gap-4 px-2">
-                {weeklyAttendance.map((item) => (
-                  <div
-                    key={item.day}
-                    className="flex flex-col items-center gap-2 flex-1 group cursor-pointer"
-                  >
+                {weeklyAttendance.map((item) => {
+                  const barHeight = Math.max(item.percentage, 10);
+                  return (
                     <div
-                      className="w-full max-w-[40px] bg-muted rounded-t relative group-hover:bg-primary/10 transition-all"
-                      style={{ height: `${Math.max(item.percentage, 10)}%` }}
+                      key={item.day}
+                      className="flex flex-col items-center gap-2 flex-1 h-full group cursor-pointer"
                     >
-                      <div
-                        className={`absolute bottom-0 left-0 w-full rounded-t transition-all duration-500 ${
-                          item.isHoliday ? 'bg-muted-foreground/30' : 'bg-primary'
-                        }`}
-                        style={{ height: '100%' }}
-                      />
-                      <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-foreground text-background text-xs py-1 px-2 rounded pointer-events-none transition-opacity whitespace-nowrap z-10">
-                        {item.isHoliday ? 'Libur' : `${item.percentage}%`}
+                      <div className="flex-1 w-full flex items-end justify-center">
+                        <div
+                          className="w-full max-w-[40px] bg-muted rounded-t relative group-hover:bg-primary/10 transition-all"
+                          style={{ height: `${barHeight}%` }}
+                        >
+                          <div
+                            className={`absolute bottom-0 left-0 w-full h-full rounded-t transition-all duration-500 ${
+                              item.isHoliday ? 'bg-muted-foreground/30' : 'bg-primary'
+                            }`}
+                          />
+                          <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-foreground text-background text-xs py-1 px-2 rounded pointer-events-none transition-opacity whitespace-nowrap z-10">
+                            {item.isHoliday ? 'Libur' : `${item.percentage}%`}
+                          </div>
+                        </div>
                       </div>
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {item.day}
+                      </span>
                     </div>
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {item.day}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -330,7 +375,7 @@ export default function DashboardPage() {
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center flex-col">
-                  <span className="text-3xl font-bold">124</span>
+                  <span className="text-3xl font-bold">{employeeComposition.total}</span>
                   <span className="text-xs text-muted-foreground">Total</span>
                 </div>
               </div>
@@ -340,7 +385,7 @@ export default function DashboardPage() {
                     <span className="h-3 w-3 rounded-full bg-primary" />
                     <span className="text-sm text-muted-foreground">Guru</span>
                   </div>
-                  <span className="text-sm font-semibold">86</span>
+                  <span className="text-sm font-semibold">{employeeComposition.guru}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -349,7 +394,7 @@ export default function DashboardPage() {
                       Tenaga Kependidikan
                     </span>
                   </div>
-                  <span className="text-sm font-semibold">38</span>
+                  <span className="text-sm font-semibold">{employeeComposition.tenagaKependidikan}</span>
                 </div>
               </div>
             </CardContent>
@@ -361,28 +406,39 @@ export default function DashboardPage() {
               <CardTitle>Pengumuman Internal</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
-                <div className="flex items-center gap-2 mb-1">
-                  <Megaphone className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-bold text-primary uppercase">
-                    Penting
-                  </span>
+              {announcements.map((announcement) => (
+                <div
+                  key={announcement.id}
+                  className={`p-3 rounded-lg ${
+                    announcement.type === 'important'
+                      ? 'bg-primary/5 border border-primary/10'
+                      : 'bg-muted/50 border'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <announcement.icon
+                      className={`h-4 w-4 ${
+                        announcement.type === 'important'
+                          ? 'text-primary'
+                          : 'text-muted-foreground'
+                      }`}
+                    />
+                    <span
+                      className={`text-xs font-bold uppercase ${
+                        announcement.type === 'important'
+                          ? 'text-primary'
+                          : 'text-muted-foreground'
+                      }`}
+                    >
+                      {announcement.label}
+                    </span>
+                  </div>
+                  <p className="text-sm font-medium">{announcement.title}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {announcement.subtitle}
+                  </p>
                 </div>
-                <p className="text-sm font-medium">Rapat Evaluasi Bulanan</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Jumat, 28 Okt - Ruang Guru Lt.2
-                </p>
-              </div>
-              <div className="p-3 rounded-lg bg-muted/50 border">
-                <div className="flex items-center gap-2 mb-1">
-                  <Cake className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs font-bold text-muted-foreground uppercase">
-                    Ulang Tahun
-                  </span>
-                </div>
-                <p className="text-sm font-medium">Bu Sri Wahyuni (Matematika)</p>
-                <p className="text-xs text-muted-foreground mt-1">Hari ini</p>
-              </div>
+              ))}
               <Button variant="outline" className="w-full border-dashed">
                 + Tambah Pengumuman
               </Button>

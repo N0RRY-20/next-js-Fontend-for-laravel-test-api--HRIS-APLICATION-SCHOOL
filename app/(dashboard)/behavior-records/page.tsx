@@ -26,6 +26,59 @@ import {
   ThumbsDown,
 } from 'lucide-react';
 
+const DUMMY_BEHAVIOR_RECORDS: BehaviorRecord[] = [
+  {
+    id: 1,
+    student_id: 1,
+    date: '2024-12-18',
+    type: 'negative',
+    category: 'Kedisiplinan',
+    description: 'Terlambat masuk kelas',
+    points: 5,
+    student: { id: 1, name: 'Muhammad Rizki', nis: '2024001' },
+  },
+  {
+    id: 2,
+    student_id: 2,
+    date: '2024-12-18',
+    type: 'positive',
+    category: 'Prestasi',
+    description: 'Juara 1 lomba hafalan Al-Quran',
+    points: 20,
+    student: { id: 2, name: 'Fatimah Azzahra', nis: '2024002' },
+  },
+  {
+    id: 3,
+    student_id: 3,
+    date: '2024-12-17',
+    type: 'negative',
+    category: 'Kebersihan',
+    description: 'Tidak menjaga kebersihan asrama',
+    points: 3,
+    student: { id: 3, name: 'Ahmad Zainul', nis: '2024003' },
+  },
+  {
+    id: 4,
+    student_id: 4,
+    date: '2024-12-17',
+    type: 'positive',
+    category: 'Akhlak',
+    description: 'Membantu teman yang kesulitan belajar',
+    points: 10,
+    student: { id: 4, name: 'Aisyah Putri', nis: '2024004' },
+  },
+  {
+    id: 5,
+    student_id: 5,
+    date: '2024-12-16',
+    type: 'negative',
+    category: 'Kedisiplinan',
+    description: 'Tidak mengikuti sholat berjamaah',
+    points: 10,
+    student: { id: 5, name: 'Umar Faruq', nis: '2024005' },
+  },
+];
+
 export default function BehaviorRecordsPage() {
   const [records, setRecords] = useState<BehaviorRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,11 +95,15 @@ export default function BehaviorRecordsPage() {
     try {
       setLoading(true);
       const response: PaginatedResponse<BehaviorRecord> = await api.getBehaviorRecords(currentPage);
-      setRecords(response.data);
-      setTotalPages(response.last_page);
-      setTotal(response.total);
+      const data = response.data.length > 0 ? response.data : DUMMY_BEHAVIOR_RECORDS;
+      setRecords(data);
+      setTotalPages(response.last_page || 1);
+      setTotal(response.total || data.length);
     } catch (error) {
       console.error('Failed to fetch behavior records:', error);
+      setRecords(DUMMY_BEHAVIOR_RECORDS);
+      setTotalPages(1);
+      setTotal(DUMMY_BEHAVIOR_RECORDS.length);
     } finally {
       setLoading(false);
     }

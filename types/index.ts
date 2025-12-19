@@ -23,15 +23,12 @@ export interface Employee {
   id: number;
   user_id: number;
   nip: string;
-  name: string;
   position: string;
-  department: string;
-  phone: string;
-  address: string;
-  hire_date: string;
-  status: 'active' | 'inactive';
+  base_salary: string;
+  status: string;
   created_at: string;
   updated_at: string;
+  user?: User;
 }
 
 // Attendance
