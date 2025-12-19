@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { Attendance, PaginatedResponse } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,8 +27,6 @@ import {
   Calendar,
   Download,
   Filter,
-  ChevronLeft,
-  ChevronRight,
   Edit,
   Trash2,
   MoreHorizontal,
@@ -59,6 +57,8 @@ const DUMMY_ATTENDANCES: Attendance[] = [
     clock_out: '16:00:00',
     status: 'present',
     notes: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     employee: { id: 1, name: 'Ahmad Fauzi', nip: '198501012010011001', position: 'Guru Matematika' },
   },
   {
@@ -69,6 +69,8 @@ const DUMMY_ATTENDANCES: Attendance[] = [
     clock_out: '16:00:00',
     status: 'late',
     notes: 'Terlambat 15 menit',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     employee: { id: 2, name: 'Siti Aminah', nip: '199001152015022001', position: 'Guru Bahasa Indonesia' },
   },
   {
@@ -79,6 +81,8 @@ const DUMMY_ATTENDANCES: Attendance[] = [
     clock_out: '16:05:00',
     status: 'present',
     notes: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     employee: { id: 3, name: 'Budi Santoso', nip: '198712202012011002', position: 'Guru IPA' },
   },
   {
@@ -89,6 +93,8 @@ const DUMMY_ATTENDANCES: Attendance[] = [
     clock_out: null,
     status: 'sick',
     notes: 'Sakit demam',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     employee: { id: 4, name: 'Dewi Lestari', nip: '199205102018032001', position: 'Guru Bahasa Inggris' },
   },
   {
@@ -99,6 +105,8 @@ const DUMMY_ATTENDANCES: Attendance[] = [
     clock_out: null,
     status: 'leave',
     notes: 'Cuti tahunan',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     employee: { id: 5, name: 'Rudi Hermawan', nip: '198808082011011003', position: 'Staff TU' },
   },
 ];
@@ -114,11 +122,7 @@ export default function AttendancesPage() {
     new Date().toISOString().split('T')[0]
   );
 
-  useEffect(() => {
-    fetchAttendances();
-  }, [currentPage, selectedDate]);
-
-  const fetchAttendances = async () => {
+  const fetchAttendances = useCallback(async () => {
     try {
       setLoading(true);
       const response: PaginatedResponse<Attendance> = await api.getAttendances(
@@ -137,7 +141,11 @@ export default function AttendancesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, selectedDate]);
+
+  useEffect(() => {
+    fetchAttendances();
+  }, [fetchAttendances]);
 
   const formatTime = (time: string | null) => {
     if (!time) return '-';

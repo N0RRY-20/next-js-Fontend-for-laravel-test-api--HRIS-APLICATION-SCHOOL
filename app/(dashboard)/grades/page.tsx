@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { Grade, PaginatedResponse } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -135,11 +135,7 @@ export default function GradesPage() {
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchGrades();
-  }, [currentPage]);
-
-  const fetchGrades = async () => {
+  const fetchGrades = useCallback(async () => {
     setLoading(true);
     try {
       const response: PaginatedResponse<Grade> = await api.getGrades(currentPage);
@@ -155,7 +151,11 @@ export default function GradesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchGrades();
+  }, [fetchGrades]);
 
   const filteredGrades = grades.filter(
     (grade) =>

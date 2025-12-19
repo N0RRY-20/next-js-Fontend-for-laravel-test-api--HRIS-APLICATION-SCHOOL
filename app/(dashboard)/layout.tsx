@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { Sidebar } from "@/components/sidebar";
@@ -15,6 +15,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const prevPathname = useRef(pathname);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -24,7 +25,12 @@ export default function DashboardLayout({
 
   // Tutup sidebar saat navigasi ke halaman lain
   useEffect(() => {
-    setIsSidebarOpen(false);
+    if (prevPathname.current !== pathname) {
+      prevPathname.current = pathname;
+      // Delay setState untuk menghindari cascading renders
+      const timer = setTimeout(() => setIsSidebarOpen(false), 0);
+      return () => clearTimeout(timer);
+    }
   }, [pathname]);
 
   if (isLoading) {

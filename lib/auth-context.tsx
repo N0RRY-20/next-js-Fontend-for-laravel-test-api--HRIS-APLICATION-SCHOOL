@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
-import { api } from './api';
-import type { User } from '@/types';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { useRouter } from "next/navigation";
+import { api } from "./api";
+import type { User } from "@/types";
 
 interface AuthContextType {
   user: User | null;
@@ -20,24 +26,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    let isMounted = true;
     const token = api.getToken();
-    if (token) {
-      api.getUser()
-        .then(setUser)
-        .catch(() => {
+
+    const initAuth = async () => {
+      if (token) {
+        try {
+          const userData = await api.getUser();
+          if (isMounted) setUser(userData);
+        } catch {
           api.setToken(null);
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
-    }
+        } finally {
+          if (isMounted) setIsLoading(false);
+        }
+      } else {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    initAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
     const response = await api.login({ email, password });
     api.setToken(response.token);
     setUser(response.user);
-    router.push('/dashboard');
+    router.push("/dashboard");
   };
 
   const logout = async () => {
@@ -48,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     api.setToken(null);
     setUser(null);
-    router.push('/login');
+    router.push("/login");
   };
 
   return (
@@ -61,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

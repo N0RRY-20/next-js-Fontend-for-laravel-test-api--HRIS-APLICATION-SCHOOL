@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { Schedule, PaginatedResponse } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -77,11 +77,7 @@ export default function SchedulesPage() {
   const [loading, setLoading] = useState(true);
   const [selectedClassroom, setSelectedClassroom] = useState('1');
 
-  useEffect(() => {
-    fetchSchedules();
-  }, [selectedClassroom]);
-
-  const fetchSchedules = async () => {
+  const fetchSchedules = useCallback(async () => {
     setLoading(true);
     try {
       const response: PaginatedResponse<Schedule> = await api.getSchedules(parseInt(selectedClassroom));
@@ -93,7 +89,11 @@ export default function SchedulesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedClassroom]);
+
+  useEffect(() => {
+    fetchSchedules();
+  }, [fetchSchedules]);
 
   const getScheduleForSlot = (day: string, startTime: string) => {
     return schedules.find(

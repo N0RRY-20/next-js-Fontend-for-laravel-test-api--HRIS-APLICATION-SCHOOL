@@ -3,7 +3,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  role: 'admin' | 'teacher' | 'staff' | 'parent';
+  role: "admin" | "teacher" | "staff" | "parent";
   created_at: string;
   updated_at: string;
 }
@@ -21,13 +21,14 @@ export interface AuthResponse {
 // Employee (HRIS)
 export interface Employee {
   id: number;
-  user_id: number;
+  user_id?: number;
+  name?: string;
   nip: string;
   position: string;
-  base_salary: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
+  base_salary?: string;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
   user?: User;
 }
 
@@ -38,7 +39,7 @@ export interface Attendance {
   date: string;
   clock_in: string | null;
   clock_out: string | null;
-  status: 'present' | 'absent' | 'late' | 'sick' | 'leave';
+  status: "present" | "absent" | "late" | "sick" | "leave";
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -54,7 +55,7 @@ export interface Payroll {
   allowances: number;
   deductions: number;
   net_salary: number;
-  status: 'pending' | 'paid';
+  status: "pending" | "paid";
   paid_at: string | null;
   created_at: string;
   updated_at: string;
@@ -77,15 +78,15 @@ export interface Student {
   id: number;
   nis: string;
   name: string;
-  classroom_id: number;
-  parent_id: number | null;
-  gender: 'male' | 'female';
-  birth_date: string;
-  address: string;
-  phone: string | null;
-  status: 'active' | 'inactive' | 'graduated';
-  created_at: string;
-  updated_at: string;
+  classroom_id?: number;
+  parent_id?: number | null;
+  gender?: "male" | "female";
+  birth_date?: string;
+  address?: string;
+  phone?: string | null;
+  status?: "active" | "inactive" | "graduated";
+  created_at?: string;
+  updated_at?: string;
   classroom?: Classroom;
 }
 
@@ -131,7 +132,7 @@ export interface Grade {
 export interface WalletTransaction {
   id: number;
   student_id: number;
-  type: 'topup' | 'payment' | 'refund';
+  type: "topup" | "payment" | "refund";
   amount: number;
   balance_after: number;
   description: string;
@@ -143,11 +144,11 @@ export interface WalletTransaction {
 export interface Billing {
   id: number;
   student_id: number;
-  type: 'spp' | 'registration' | 'other';
+  type: "spp" | "registration" | "other";
   description: string;
   amount: number;
   due_date: string;
-  status: 'pending' | 'paid' | 'overdue';
+  status: "pending" | "paid" | "overdue";
   paid_at: string | null;
   created_at: string;
   updated_at: string;
@@ -159,7 +160,7 @@ export interface BehaviorRecord {
   id: number;
   student_id: number;
   recorded_by: number;
-  type: 'positive' | 'negative';
+  type: "positive" | "negative";
   category: string;
   description: string;
   points: number;
@@ -172,15 +173,15 @@ export interface BehaviorRecord {
 export interface TahfidzRecord {
   id: number;
   student_id: number;
-  teacher_id: number;
+  teacher_id?: number;
   surah: string;
   start_ayah: number;
   end_ayah: number;
-  type: 'memorization' | 'murajaah';
-  grade: 'excellent' | 'good' | 'fair' | 'poor';
+  type: "memorization" | "murajaah";
+  grade: "excellent" | "good" | "fair" | "poor";
   notes: string | null;
   date: string;
-  created_at: string;
+  created_at?: string;
   student?: Student;
 }
 
@@ -190,7 +191,7 @@ export interface Schedule {
   classroom_id: number;
   subject_id: number;
   teacher_id: number;
-  day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday';
+  day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday";
   start_time: string;
   end_time: string;
   created_at: string;

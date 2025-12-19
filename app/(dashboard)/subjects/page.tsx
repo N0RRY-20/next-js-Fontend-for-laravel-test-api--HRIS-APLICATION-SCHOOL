@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { Subject, PaginatedResponse } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -107,11 +107,7 @@ export default function SubjectsPage() {
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchSubjects();
-  }, [currentPage]);
-
-  const fetchSubjects = async () => {
+  const fetchSubjects = useCallback(async () => {
     setLoading(true);
     try {
       const response: PaginatedResponse<Subject> = await api.getSubjects(currentPage);
@@ -127,7 +123,11 @@ export default function SubjectsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchSubjects();
+  }, [fetchSubjects]);
 
   const filteredSubjects = subjects.filter(
     (subject) =>

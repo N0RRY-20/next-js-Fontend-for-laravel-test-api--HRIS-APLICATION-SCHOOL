@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { Classroom, PaginatedResponse } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -39,6 +39,8 @@ const DUMMY_CLASSROOMS: Classroom[] = [
     grade_level: 'VII',
     capacity: 30,
     homeroom_teacher_id: 1,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
   },
   {
     id: 2,
@@ -46,6 +48,8 @@ const DUMMY_CLASSROOMS: Classroom[] = [
     grade_level: 'VII',
     capacity: 30,
     homeroom_teacher_id: 2,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
   },
   {
     id: 3,
@@ -53,6 +57,8 @@ const DUMMY_CLASSROOMS: Classroom[] = [
     grade_level: 'VIII',
     capacity: 32,
     homeroom_teacher_id: 3,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
   },
   {
     id: 4,
@@ -60,6 +66,8 @@ const DUMMY_CLASSROOMS: Classroom[] = [
     grade_level: 'VIII',
     capacity: 32,
     homeroom_teacher_id: null,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
   },
   {
     id: 5,
@@ -67,6 +75,8 @@ const DUMMY_CLASSROOMS: Classroom[] = [
     grade_level: 'IX',
     capacity: 28,
     homeroom_teacher_id: 4,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
   },
   {
     id: 6,
@@ -74,6 +84,8 @@ const DUMMY_CLASSROOMS: Classroom[] = [
     grade_level: 'IX',
     capacity: 28,
     homeroom_teacher_id: 5,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
   },
 ];
 
@@ -85,11 +97,7 @@ export default function ClassroomsPage() {
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchClassrooms();
-  }, [currentPage]);
-
-  const fetchClassrooms = async () => {
+  const fetchClassrooms = useCallback(async () => {
     try {
       setLoading(true);
       const response: PaginatedResponse<Classroom> = await api.getClassrooms(currentPage);
@@ -105,7 +113,11 @@ export default function ClassroomsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchClassrooms();
+  }, [fetchClassrooms]);
 
   const filteredClassrooms = classrooms.filter(
     (classroom) =>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { BehaviorRecord, PaginatedResponse } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -30,51 +30,61 @@ const DUMMY_BEHAVIOR_RECORDS: BehaviorRecord[] = [
   {
     id: 1,
     student_id: 1,
+    recorded_by: 1,
     date: '2024-12-18',
     type: 'negative',
     category: 'Kedisiplinan',
     description: 'Terlambat masuk kelas',
     points: 5,
+    created_at: '2024-12-18T08:00:00Z',
     student: { id: 1, name: 'Muhammad Rizki', nis: '2024001' },
   },
   {
     id: 2,
     student_id: 2,
+    recorded_by: 1,
     date: '2024-12-18',
     type: 'positive',
     category: 'Prestasi',
     description: 'Juara 1 lomba hafalan Al-Quran',
     points: 20,
+    created_at: '2024-12-18T09:00:00Z',
     student: { id: 2, name: 'Fatimah Azzahra', nis: '2024002' },
   },
   {
     id: 3,
     student_id: 3,
+    recorded_by: 2,
     date: '2024-12-17',
     type: 'negative',
     category: 'Kebersihan',
     description: 'Tidak menjaga kebersihan asrama',
     points: 3,
+    created_at: '2024-12-17T10:00:00Z',
     student: { id: 3, name: 'Ahmad Zainul', nis: '2024003' },
   },
   {
     id: 4,
     student_id: 4,
+    recorded_by: 2,
     date: '2024-12-17',
     type: 'positive',
     category: 'Akhlak',
     description: 'Membantu teman yang kesulitan belajar',
     points: 10,
+    created_at: '2024-12-17T11:00:00Z',
     student: { id: 4, name: 'Aisyah Putri', nis: '2024004' },
   },
   {
     id: 5,
     student_id: 5,
+    recorded_by: 1,
     date: '2024-12-16',
     type: 'negative',
     category: 'Kedisiplinan',
     description: 'Tidak mengikuti sholat berjamaah',
     points: 10,
+    created_at: '2024-12-16T07:00:00Z',
     student: { id: 5, name: 'Umar Faruq', nis: '2024005' },
   },
 ];
@@ -87,11 +97,7 @@ export default function BehaviorRecordsPage() {
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchRecords();
-  }, [currentPage]);
-
-  const fetchRecords = async () => {
+  const fetchRecords = useCallback(async () => {
     try {
       setLoading(true);
       const response: PaginatedResponse<BehaviorRecord> = await api.getBehaviorRecords(currentPage);
@@ -107,7 +113,11 @@ export default function BehaviorRecordsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchRecords();
+  }, [fetchRecords]);
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('id-ID', {

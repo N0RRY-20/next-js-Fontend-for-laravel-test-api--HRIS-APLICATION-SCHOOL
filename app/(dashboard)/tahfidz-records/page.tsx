@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { TahfidzRecord, PaginatedResponse } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -114,11 +114,7 @@ export default function TahfidzRecordsPage() {
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchRecords();
-  }, [currentPage]);
-
-  const fetchRecords = async () => {
+  const fetchRecords = useCallback(async () => {
     try {
       setLoading(true);
       const response: PaginatedResponse<TahfidzRecord> = await api.getTahfidzRecords(currentPage);
@@ -134,7 +130,11 @@ export default function TahfidzRecordsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchRecords();
+  }, [fetchRecords]);
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('id-ID', {

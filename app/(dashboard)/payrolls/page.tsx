@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { Payroll, PaginatedResponse } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -43,7 +43,10 @@ const DUMMY_PAYROLLS: Payroll[] = [
     deductions: 500000,
     net_salary: 6000000,
     status: 'paid',
-    employee: { id: 1, name: 'Ahmad Fauzi', nip: '198501012010011001' },
+    paid_at: '2024-12-25T10:00:00Z',
+    created_at: '2024-12-01T00:00:00Z',
+    updated_at: '2024-12-25T10:00:00Z',
+    employee: { id: 1, name: 'Ahmad Fauzi', nip: '198501012010011001', position: 'Guru' },
   },
   {
     id: 2,
@@ -54,7 +57,10 @@ const DUMMY_PAYROLLS: Payroll[] = [
     deductions: 450000,
     net_salary: 5250000,
     status: 'paid',
-    employee: { id: 2, name: 'Siti Aminah', nip: '199001152015022001' },
+    paid_at: '2024-12-25T10:00:00Z',
+    created_at: '2024-12-01T00:00:00Z',
+    updated_at: '2024-12-25T10:00:00Z',
+    employee: { id: 2, name: 'Siti Aminah', nip: '199001152015022001', position: 'Guru' },
   },
   {
     id: 3,
@@ -65,7 +71,10 @@ const DUMMY_PAYROLLS: Payroll[] = [
     deductions: 480000,
     net_salary: 5620000,
     status: 'pending',
-    employee: { id: 3, name: 'Budi Santoso', nip: '198712202012011002' },
+    paid_at: null,
+    created_at: '2024-12-01T00:00:00Z',
+    updated_at: '2024-12-01T00:00:00Z',
+    employee: { id: 3, name: 'Budi Santoso', nip: '198712202012011002', position: 'Staff' },
   },
   {
     id: 4,
@@ -76,7 +85,10 @@ const DUMMY_PAYROLLS: Payroll[] = [
     deductions: 420000,
     net_salary: 4780000,
     status: 'pending',
-    employee: { id: 4, name: 'Dewi Lestari', nip: '199205102018032001' },
+    paid_at: null,
+    created_at: '2024-12-01T00:00:00Z',
+    updated_at: '2024-12-01T00:00:00Z',
+    employee: { id: 4, name: 'Dewi Lestari', nip: '199205102018032001', position: 'Guru' },
   },
   {
     id: 5,
@@ -87,7 +99,10 @@ const DUMMY_PAYROLLS: Payroll[] = [
     deductions: 350000,
     net_salary: 3950000,
     status: 'paid',
-    employee: { id: 5, name: 'Rudi Hermawan', nip: '198808082011011003' },
+    paid_at: '2024-12-25T10:00:00Z',
+    created_at: '2024-12-01T00:00:00Z',
+    updated_at: '2024-12-25T10:00:00Z',
+    employee: { id: 5, name: 'Rudi Hermawan', nip: '198808082011011003', position: 'Staff' },
   },
 ];
 
@@ -99,11 +114,7 @@ export default function PayrollsPage() {
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchPayrolls();
-  }, [currentPage]);
-
-  const fetchPayrolls = async () => {
+  const fetchPayrolls = useCallback(async () => {
     try {
       setLoading(true);
       const response: PaginatedResponse<Payroll> = await api.getPayrolls(currentPage);
@@ -119,7 +130,11 @@ export default function PayrollsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchPayrolls();
+  }, [fetchPayrolls]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {

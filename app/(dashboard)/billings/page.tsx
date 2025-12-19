@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { Billing, PaginatedResponse } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -60,6 +60,9 @@ const DUMMY_BILLINGS: Billing[] = [
     amount: 1500000,
     due_date: '2024-12-15',
     status: 'paid',
+    paid_at: '2024-12-10T10:00:00Z',
+    created_at: '2024-12-01T00:00:00Z',
+    updated_at: '2024-12-10T10:00:00Z',
     student: { id: 1, name: 'Muhammad Rizki', nis: '2024001' },
   },
   {
@@ -70,6 +73,9 @@ const DUMMY_BILLINGS: Billing[] = [
     amount: 1500000,
     due_date: '2024-12-15',
     status: 'pending',
+    paid_at: null,
+    created_at: '2024-12-01T00:00:00Z',
+    updated_at: '2024-12-01T00:00:00Z',
     student: { id: 2, name: 'Fatimah Azzahra', nis: '2024002' },
   },
   {
@@ -80,6 +86,9 @@ const DUMMY_BILLINGS: Billing[] = [
     amount: 1500000,
     due_date: '2024-11-15',
     status: 'overdue',
+    paid_at: null,
+    created_at: '2024-11-01T00:00:00Z',
+    updated_at: '2024-11-01T00:00:00Z',
     student: { id: 3, name: 'Ahmad Zainul', nis: '2024003' },
   },
   {
@@ -90,6 +99,9 @@ const DUMMY_BILLINGS: Billing[] = [
     amount: 5000000,
     due_date: '2024-07-30',
     status: 'paid',
+    paid_at: '2024-07-25T14:00:00Z',
+    created_at: '2024-07-01T00:00:00Z',
+    updated_at: '2024-07-25T14:00:00Z',
     student: { id: 4, name: 'Aisyah Putri', nis: '2024004' },
   },
   {
@@ -100,6 +112,9 @@ const DUMMY_BILLINGS: Billing[] = [
     amount: 500000,
     due_date: '2024-12-20',
     status: 'pending',
+    paid_at: null,
+    created_at: '2024-12-01T00:00:00Z',
+    updated_at: '2024-12-01T00:00:00Z',
     student: { id: 5, name: 'Umar Faruq', nis: '2024005' },
   },
 ];
@@ -112,11 +127,7 @@ export default function BillingsPage() {
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchBillings();
-  }, [currentPage]);
-
-  const fetchBillings = async () => {
+  const fetchBillings = useCallback(async () => {
     try {
       setLoading(true);
       const response: PaginatedResponse<Billing> = await api.getBillings(currentPage);
@@ -132,7 +143,11 @@ export default function BillingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchBillings();
+  }, [fetchBillings]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {

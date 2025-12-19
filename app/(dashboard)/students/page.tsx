@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import type { Student, PaginatedResponse } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -53,11 +53,7 @@ export default function StudentsPage() {
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchStudents();
-  }, [currentPage]);
-
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     try {
       setLoading(true);
       const response: PaginatedResponse<Student> = await api.getStudents(currentPage);
@@ -69,7 +65,11 @@ export default function StudentsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchStudents();
+  }, [fetchStudents]);
 
   const filteredStudents = students.filter(
     (student) =>
@@ -168,9 +168,9 @@ export default function StudentsPage() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={statusColors[student.status] || ''}
+                        className={student.status ? statusColors[student.status] : ''}
                       >
-                        {statusLabels[student.status] || student.status}
+                        {student.status ? statusLabels[student.status] : student.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
