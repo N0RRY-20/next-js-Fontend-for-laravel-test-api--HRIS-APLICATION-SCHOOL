@@ -1,34 +1,64 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAuth } from '@/lib/auth-context';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Card, CardContent } from '@/components/ui/card';
-import { Eye, EyeOff, Mail, School } from 'lucide-react';
+import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Eye, EyeOff, Mail, School, Play, Copy, Check } from "lucide-react";
+
+// Demo credentials
+const DEMO_CREDENTIALS = {
+  email: "admin@school.com",
+  password: "password",
+};
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [isDemoDialogOpen, setIsDemoDialogOpen] = useState(false);
+  const [copied, setCopied] = useState<"email" | "password" | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       await login(email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login gagal');
+      setError(err instanceof Error ? err.message : "Login gagal");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleFillDemoCredentials = () => {
+    setEmail(DEMO_CREDENTIALS.email);
+    setPassword(DEMO_CREDENTIALS.password);
+    setIsDemoDialogOpen(false);
+  };
+
+  const handleCopy = async (type: "email" | "password") => {
+    const value =
+      type === "email" ? DEMO_CREDENTIALS.email : DEMO_CREDENTIALS.password;
+    await navigator.clipboard.writeText(value);
+    setCopied(type);
+    setTimeout(() => setCopied(null), 2000);
   };
 
   return (
@@ -111,7 +141,7 @@ export default function LoginPage() {
                   <div className="relative">
                     <Input
                       id="password"
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -159,8 +189,112 @@ export default function LoginPage() {
                   className="w-full h-12 mt-4 font-bold"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Memproses...' : 'Masuk'}
+                  {isLoading ? "Memproses..." : "Masuk"}
                 </Button>
+
+                {/* Divider */}
+                <div className="relative my-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-border"></div>
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      atau
+                    </span>
+                  </div>
+                </div>
+
+                {/* Demo Button */}
+                <Dialog
+                  open={isDemoDialogOpen}
+                  onOpenChange={setIsDemoDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full h-12 gap-2 font-medium border-dashed border-2 hover:border-primary hover:bg-primary/5"
+                    >
+                      <Play className="h-4 w-4" />
+                      Coba Demo
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Play className="h-4 w-4 text-primary" />
+                        </div>
+                        Mode Demo
+                      </DialogTitle>
+                      <DialogDescription>
+                        Gunakan kredensial berikut untuk mencoba aplikasi tanpa
+                        harus mendaftar.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      {/* Email Field */}
+                      <div className="space-y-2">
+                        <Label className="text-xs font-medium text-muted-foreground">
+                          Email
+                        </Label>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 px-3 py-2.5 bg-muted rounded-lg font-mono text-sm">
+                            {DEMO_CREDENTIALS.email}
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0"
+                            onClick={() => handleCopy("email")}
+                          >
+                            {copied === "email" ? (
+                              <Check className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Password Field */}
+                      <div className="space-y-2">
+                        <Label className="text-xs font-medium text-muted-foreground">
+                          Password
+                        </Label>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 px-3 py-2.5 bg-muted rounded-lg font-mono text-sm">
+                            {DEMO_CREDENTIALS.password}
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0"
+                            onClick={() => handleCopy("password")}
+                          >
+                            {copied === "password" ? (
+                              <Check className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <Button
+                      type="button"
+                      className="w-full h-11 font-medium"
+                      onClick={handleFillDemoCredentials}
+                    >
+                      <Play className="h-4 w-4 mr-2" />
+                      Isi Form & Tutup
+                    </Button>
+                  </DialogContent>
+                </Dialog>
               </form>
             </CardContent>
           </Card>
